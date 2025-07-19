@@ -1,5 +1,32 @@
 #!/bin/bash
 
+# Function to handle script termination (e.g., on Ctrl+C)
+cleanup() {
+    echo -e "\nInstallation aborted. Exiting."
+    exit 1
+}
+
+# Trap Ctrl+C (SIGINT) to call the cleanup function
+trap cleanup SIGINT
+
+# Function to check for root privileges
+check_root() {
+    if [[ $EUID -ne 0 ]]; then
+        echo "This script must be run as root. Please use 'sudo'."
+        exit 1
+    fi
+}
+
+# Function to update package lists once at the start
+update_system() {
+    echo "Updating package lists..."
+    if ! sudo apt update; then
+        echo "Error: Failed to update package lists. Check your internet connection."
+        exit 1
+    fi
+    echo "Package lists updated successfully."
+}
+
 # Function to display the menu
 show_menu() {
     clear
@@ -16,22 +43,40 @@ show_menu() {
     echo -n "Please enter your choice [1-6]: "
 }
 
-# Function to install packages with error handling
+# Function to install packages with confirmation and error handling
 install_packages() {
     local packages="$1"
     local name="$2"
     
-    echo "Starting installation of $name..."
-    sudo apt update
-    if sudo apt install -y $packages; then
-        echo "$name installed successfully!"
+    echo "You have chosen to install $name."
+    read -p "Are you sure you want to proceed? [Y/n]: " -n 1 -r
+    echo
+    
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo "Starting installation of $name..."
+        if sudo apt install -y "$packages"; then
+            echo "-----------------------------------"
+            echo "$name installed successfully!"
+            echo "You may need to reboot your system for changes to take effect."
+            echo "-----------------------------------"
+        else
+            echo "Error occurred during $name installation. Please check the output above for details."
+        fi
     else
-        echo "Error occurred during $name installation."
-        return 1
+        echo "Installation of $name cancelled."
     fi
 }
 
+#====================================================
 # Main program
+#====================================================
+
+# Check for root privileges
+check_root
+
+# Update the system once before the loop
+update_system
+
 while true; do
     show_menu
     read choice
@@ -41,7 +86,7 @@ while true; do
             install_packages "kde-plasma-desktop" "KDE Plasma"
             ;;
         2)
-            install_packages "gnome" "GNOME"
+            install_packages "gnome-core" "GNOME"
             ;;
         3)
             install_packages "xfce4" "XFCE"
@@ -50,7 +95,7 @@ while true; do
             install_packages "mate-desktop-environment" "MATE"
             ;;
         5)
-            install_packages "cinnamon" "Cinnamon"
+            install_packages "cinnamon-desktop-environment" "Cinnamon"
             ;;
         6)
             echo "Exiting..."
