@@ -1,7 +1,7 @@
 Debian Environment Installer
 A simple script to automate the setup of a Debian environment with essential tools and configurations.
 
-Overview
+Overview: 
 This project provides an easy-to-use installer script to quickly set up a Debian system with a pre-defined set of packages and configurations. It’s perfect for new installations or for quickly configuring Debian on multiple machines.
 
 Features
