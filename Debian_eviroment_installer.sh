@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Check for root privileges
+if [[ $EUID -ne 0 ]]; then
+  echo "❌ Please run this script as root or with sudo."
+  exit 1
+fi
+
 # Function to display the menu
 show_menu() {
     clear
