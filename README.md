@@ -22,10 +22,10 @@ Internet connection to download packages
 
 Usage
 Clone this repository: 
-git clone https://github.com/Dominanko/Debian-Enviroment-installer.git
+git clone https://github.com/Dominanko/Debian-environment-installer.git
 
 Navigate to the project folder: 
-cd Debian-Enviroment-installer
+cd Debian-environment-installer
 
 Make the installer script executable: 
 chmod +x Debian_environment_installer.sh
